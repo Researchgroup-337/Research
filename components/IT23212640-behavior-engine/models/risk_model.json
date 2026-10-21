@@ -1,0 +1,22 @@
+{
+  "hostile_threshold": 0.5,
+  "half_life_days": 30.0,
+  "escalation_window": 5,
+  "ewma_alpha": 0.4,
+  "intercept": -11.746042866138861,
+  "coef_T": 1.0976538113042178,
+  "coef_logr": 2.7914440566469194,
+  "coef_s": 0.1986408632326739,
+  "coef_recency": 3.9842521211536193,
+  "coef_v": 0.0,
+  "tier_medium": 0.46102588273161577,
+  "tier_high": 0.5536568836382395,
+  "tier_critical": 0.7059878919151188,
+  "threat_override_p": 0.9,
+  "threat_hold_hours": 24.0,
+  "pressure_window_days": 7.0,
+  "pressure_min_senders": 3,
+  "retention_days": 90,
+  "broadcast_target": "__channel_owner__",
+  "extra": {}
+}

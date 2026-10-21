@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafeChat Researcher Console</title>
+<style>
+:root{--page:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#898781;--line:#e1e0d9;--axis:#c3c2b7;--accent:#2a78d6;--accent-ink:#fff;
+  --t-low:#cde2fb;--t-med:#86b6ef;--t-high:#2a78d6;--t-crit:#0d366b;--t-low-ink:#0d366b;--t-med-ink:#0b0b0b;--t-high-ink:#fff;--t-crit-ink:#fff;--pos:#d03b3b;
+  --warn:#fff4d6;--warn-line:#e8c66a;--warn-ink:#5c4400}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--page:#0d0d0d;--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;--muted:#898781;--line:#2c2c2a;--axis:#383835;--accent:#3987e5;
+  --t-low:#184f95;--t-med:#256abf;--t-high:#5598e7;--t-crit:#cde2fb;--t-low-ink:#f0efec;--t-med-ink:#fff;--t-high-ink:#0b0b0b;--t-crit-ink:#0d366b;--pos:#ff7b72;
+  --warn:#332b10;--warn-line:#8a7428;--warn-ink:#f3dc8e}}
+:root[data-theme="dark"]{--page:#0d0d0d;--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;--muted:#898781;--line:#2c2c2a;--axis:#383835;--accent:#3987e5;
+  --t-low:#184f95;--t-med:#256abf;--t-high:#5598e7;--t-crit:#cde2fb;--t-low-ink:#f0efec;--t-med-ink:#fff;--t-high-ink:#0b0b0b;--t-crit-ink:#0d366b;--pos:#ff7b72;
+  --warn:#332b10;--warn-line:#8a7428;--warn-ink:#f3dc8e}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line)}
+h1{font-size:17px;margin:0}
+h2{font-size:14px;margin:0 0 10px}
+.sub{color:var(--ink2);font-size:12.5px}
+main{max-width:1280px;margin:0 auto;padding:16px 20px}
+@media (max-width:600px){header,main{padding-left:16px;padding-right:16px}}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:14px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.kpi .v{font-size:24px;font-weight:600;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis}
+.kpi .l{color:var(--ink2);font-size:12px}
+section{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:14px;min-width:0}
+.cols{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:14px}
+@media (max-width:1000px){.cols{grid-template-columns:minmax(0,1fr)}}
+/* tables: fixed layout, header aligned with its cells, scroll inside the card */
+.tbl{overflow:auto;max-height:68vh;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:separate;border-spacing:0;width:100%;table-layout:fixed;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+th{position:sticky;top:0;z-index:1;background:var(--surface);color:var(--muted);font-weight:500;font-size:12px;white-space:normal;vertical-align:bottom;line-height:1.25}
+th.num,td.num{text-align:right}
+th.c,td.c{text-align:center}
+td.txt{white-space:normal;overflow-wrap:anywhere}
+th.sort{cursor:pointer;user-select:none}
+th.sort:hover{color:var(--ink)}
+th .ar{font-size:10px;margin-left:3px;color:var(--accent)}
+tbody tr:last-child td{border-bottom:0}
+td select{width:100%}
+input,select,button{font:inherit;padding:5px 9px;border-radius:7px;border:1px solid var(--axis);background:var(--surface);color:var(--ink)}
+button{cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+button.sm{padding:2px 8px;font-size:12.5px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.row .grow{flex:1 1 200px;min-width:0}
+.tier{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600}
+.Low{background:var(--t-low);color:var(--t-low-ink)}.Medium{background:var(--t-med);color:var(--t-med-ink)}
+.High{background:var(--t-high);color:var(--t-high-ink)}.Critical{background:var(--t-crit);color:var(--t-crit-ink)}
+.live{font-size:11px;font-weight:600;padding:1px 7px;border-radius:999px;border:1px solid var(--axis);color:var(--ink2)}
+.live.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.lab1{color:var(--pos);font-weight:700}
+.tag{display:inline-block;border:1px solid var(--line);border-radius:6px;padding:0 5px;margin-left:4px;font-size:11px;color:var(--ink2);font-weight:400}
+code{font-size:12px}
+#err{color:var(--pos);font-size:12.5px}
+#msg{color:var(--accent);font-size:12.5px}
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.tabs button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.warnbox{background:var(--warn);border:1px solid var(--warn-line);color:var(--warn-ink);border-radius:10px;padding:10px 14px;margin-bottom:14px}
+.warnbox h2{color:var(--warn-ink)}
+.warnbox ul{margin:6px 0 0;padding-left:18px}
+.warnbox li{margin:6px 0}
+.warnbox .acts{display:inline-flex;gap:6px;margin-left:6px;flex-wrap:wrap}
+.count{font-size:12px;color:var(--ink2);margin-left:6px}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>SafeChat Lab: Researcher Console</h1><div class="sub">Sessions, roles, live engine output, ground-truth labels and dataset export</div></div>
+  <form id="f" class="row" style="margin:0"><input id="key" type="password" placeholder="Researcher key" autocomplete="off"><button>Connect</button><span id="err"></span><span id="msg"></span></form>
+</header>
+<main>
+  <div class="kpis">
+    <div class="kpi"><div class="v" id="k-p">–</div><div class="l">Participants</div></div>
+    <div class="kpi"><div class="v" id="k-s">–</div><div class="l">Sessions</div></div>
+    <div class="kpi"><div class="v" id="k-m">–</div><div class="l">Messages logged</div></div>
+    <div class="kpi"><div class="v" id="k-pairs">–</div><div class="l">Sender → target pairs</div></div>
+    <div class="kpi"><div class="v" id="k-model">–</div><div class="l">Content model</div></div>
+  </div>
+  <div class="tabs" id="tabs">
+    <button data-t="setup" class="on">Setup &amp; sessions</button><button data-t="pairs">Pairs &amp; labels</button>
+    <button data-t="feed">Live feed</button><button data-t="export">Export</button>
+  </div>
+
+  <div data-p="setup">
+    <section><h2>Participants</h2>
+      <form id="addP" class="row"><input id="pName" placeholder="Persona name, e.g. Nimal" required><label class="sub"><input type="checkbox" id="pBot"> bot</label><button class="primary">Add</button></form>
+      <div class="tbl"><table style="min-width:930px">
+        <colgroup><col style="width:110px"><col style="width:150px"><col style="width:140px"><col style="width:150px"><col style="width:170px"><col style="width:110px"><col style="width:100px"></colgroup>
+        <thead><tr><th>Code</th><th>Name</th><th>Token</th><th>Role</th><th title="Who this role is aimed at (required for harasser, subtle harasser, escalator, burst and banter)">Target</th><th class="c" title="Overall = highest tier across all of this user's targets, right now">Overall status</th><th class="c"></th></tr></thead>
+        <tbody id="parts"></tbody></table></div>
+    </section>
+    <div class="cols">
+      <section><h2>Rooms (one live stream = one session)</h2>
+        <form id="addR" class="row"><input id="rName" placeholder="Room name" required class="grow"><select id="rOwner"></select><button class="primary">Create</button></form>
+        <label class="sub row" style="margin-bottom:8px"><input type="checkbox" id="autoRep"> Auto-save report when a session ends <span class="sub">(saved on the server in data/safechat/reports/)</span></label>
+        <div class="tbl"><table style="min-width:470px">
+          <colgroup><col style="width:160px"><col style="width:70px"><col style="width:130px"><col style="width:110px"></colgroup>
+          <thead><tr><th>Room</th><th>Owner</th><th class="c">Status</th><th class="c"></th></tr></thead>
+          <tbody id="rooms"></tbody></table></div>
+      </section>
+      <section><h2>Sessions</h2>
+        <div class="tbl"><table style="min-width:640px">
+          <colgroup><col style="width:110px"><col style="width:100px"><col style="width:100px"><col style="width:52px"><col style="width:63px"><col style="width:215px"></colgroup>
+          <thead><tr><th>Session</th><th>Started</th><th>Ended</th><th class="num">Msgs</th><th class="num">Senders</th><th class="c" title="Session report built only from engine outputs. View shows message text; PDF and CSV hide it.">Report</th></tr></thead>
+          <tbody id="sess"></tbody></table></div>
+      </section>
+    </div>
+  </div>
+
+  <div data-p="pairs" hidden>
+    <div id="lc" class="warnbox" hidden></div>
+    <section><h2>Sender → target pairs (engine risk now) and ground truth</h2>
+      <div class="sub" style="margin-bottom:8px">Label 1 = repeat harassment. Role-assigned labels are filled automatically; click to override after reviewing the messages. Click a column header to sort.</div>
+      <div class="row"><input id="qPairs" class="grow" type="search" placeholder="Filter by name or code" autocomplete="off"><span class="count" id="nPairs"></span></div>
+      <div class="tbl"><table style="min-width:1210px">
+        <colgroup><col style="width:170px"><col style="width:170px"><col style="width:115px"><col style="width:85px"><col style="width:135px"><col style="width:65px"><col style="width:85px"><col style="width:105px"><col style="width:70px"><col style="width:105px"><col style="width:100px"></colgroup>
+        <thead><tr>
+          <th class="sort" data-s="pairs" data-k="sender" title="Who sent the messages">Sender</th>
+          <th class="sort" data-s="pairs" data-k="target" title="Who the messages were aimed at">Target</th>
+          <th class="sort" data-s="pairs" data-k="role" title="Sender's assigned role (ground truth; the engine never sees it)">Role</th>
+          <th class="sort c" data-s="pairs" data-k="tier_now" title="Pair tier = this sender → target pair, right now (risk decays over time)">Pair tier</th>
+          <th class="sort c" data-s="pairs" data-k="sender_overall_tier" title="Overall = highest tier across all of this sender's targets, right now. 'N targets' = how many of their pairs are High or Critical (shown when more than 1)">Sender overall</th>
+          <th class="sort num" data-s="pairs" data-k="risk_now" title="Engine risk probability right now (0-1)">Risk</th>
+          <th class="sort num" data-s="pairs" data-k="hostile_messages" title="Messages to this target with T >= 0.5">Hostile msgs</th>
+          <th class="sort num" data-s="pairs" data-k="sessions_targeted" title="Number of sessions in which this sender was hostile to this target">Sessions with hostility</th>
+          <th class="sort num" data-s="pairs" data-k="messages" title="All messages from this sender to this target">All msgs</th>
+          <th class="sort c" data-s="pairs" data-k="label" title="Ground truth: 1 = repeat harassment. 'role' = from the role assignment, 'manual' = set by an annotator">Label</th>
+          <th class="c" title="Set a manual label after reviewing the messages">Set label</th></tr></thead>
+        <tbody id="pairs"></tbody></table></div>
+    </section>
+  </div>
+
+  <div data-p="feed" hidden>
+    <section><h2>Live message feed</h2>
+      <div class="row"><input id="qFeed" class="grow" type="search" placeholder="Filter by name or code" autocomplete="off"><span class="count" id="nFeed"></span></div>
+      <div class="tbl"><table style="min-width:1215px">
+        <colgroup><col style="width:120px"><col style="width:110px"><col style="width:160px"><col style="width:160px"><col style="width:85px"><col style="width:60px"><col style="width:90px"><col style="width:90px"><col style="width:340px"></colgroup>
+        <thead><tr>
+          <th class="sort" data-s="feed" data-k="ts">Time</th>
+          <th class="sort" data-s="feed" data-k="session_id">Session</th>
+          <th class="sort" data-s="feed" data-k="sender">Sender</th>
+          <th class="sort" data-s="feed" data-k="target" title="Resolved by the engine">Target</th>
+          <th class="sort" data-s="feed" data-k="target_method" title="How the target was found: reply, mention, name or broadcast (room owner)">How</th>
+          <th class="sort num" data-s="feed" data-k="T" title="Content threat score of this message (0-1)">T</th>
+          <th class="sort c" data-s="feed" data-k="tier" title="Pair tier = this sender → target pair, after this message">Pair tier</th>
+          <th class="sort c" data-s="feed" data-k="user_tier" title="Overall = highest tier across all of this user's targets, after this message ('–' for messages logged before this was recorded)">Overall</th>
+          <th>Message</th></tr></thead>
+        <tbody id="feed"></tbody></table></div>
+    </section>
+  </div>
+
+  <div data-p="export" hidden>
+    <section><h2>Export dataset</h2>
+      <p class="sub">A zip of CSVs (messages, pairs with labels and label reviews, participants with roles, sessions). Display names are never exported. Evaluate with
+      <code>python scripts/evaluate_collected.py --export &lt;zip&gt;</code>.</p>
+      <div class="row"><button class="primary" id="exp1">Download dataset (with text)</button><button id="exp2">Download without message text</button></div>
+      <p class="sub">Per-session reports: use the <b>Report</b> column in <i>Setup &amp; sessions</i>, or <code>python scripts/session_report.py --all</code>.</p>
+    </section>
+  </div>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let KEY = ""; try { KEY = sessionStorage.getItem("sc_rkey") || ""; } catch(e) {}
+let AUTO = false; try { AUTO = localStorage.getItem("sc_autoreport") === "1"; } catch(e) {}
+let NAMES = {};
+const who = c => `<b>${esc(NAMES[c] || c)}</b> <span class="sub">${esc(c)}</span>`;
+let ROLES = {}, PARTS = [], TAB = "setup", DIRTY = false;
+const TARGET_ROLES = new Set(["harasser", "subtle_harasser", "escalator", "burst", "banter"]);
+const TIER_RANK = {Low: 0, Medium: 1, High: 2, Critical: 3};
+const TIER_KEYS = new Set(["tier_now", "tier", "sender_overall_tier", "user_tier"]);
+const badge = t => t ? `<span class="tier ${t}">${t}</span>` : "–";
+const SORT = {pairs: {k: "risk_now", d: -1}, feed: {k: "ts", d: -1}};
+const DATA = {pairs: [], feed: []};
+let LC_SIG = "";
+document.addEventListener("change", e => { if (e.target.closest && e.target.closest("#parts")) DIRTY = true; });
+const fmt = ts => ts ? new Date(ts*1000).toLocaleString([], {month:"short", day:"numeric", hour:"2-digit", minute:"2-digit", hour12:false}) : "–";
+const fmtS = ts => ts ? new Date(ts*1000).toLocaleString([], {month:"short", day:"numeric", hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false}) : "–";
+async function api(path, opts = {}){
+  const r = await fetch(path, {...opts, headers: {"X-Researcher-Key": KEY, "Content-Type": "application/json", ...(opts.headers||{})}});
+  if (!r.ok) {
+    if (r.status === 401) throw new Error("Wrong researcher key");
+    let d = ""; try { const j = await r.json(); d = typeof j.detail === "string" ? j.detail : (j.detail?.[0]?.msg || ""); } catch(e) {}
+    throw new Error(d || `Error ${r.status}`);
+  }
+  return r.headers.get("content-type")?.includes("json") ? r.json() : r;
+}
+const post = (p, b) => api(p, {method: "POST", body: JSON.stringify(b || {})});
+const say = (t, isErr) => { $(isErr ? "err" : "msg").textContent = t; $(isErr ? "msg" : "err").textContent = ""; if (!isErr && t) setTimeout(() => { if ($("msg").textContent === t) $("msg").textContent = ""; }, 5000); };
+
+document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => {
+  TAB = b.dataset.t; document.querySelectorAll("#tabs button").forEach(x => x.classList.toggle("on", x === b));
+  document.querySelectorAll("[data-p]").forEach(p => p.hidden = p.dataset.p !== TAB); refresh();
+});
+
+// ---- sorting and filtering (state survives the 3-second refresh)
+function sortVal(row, k){
+  const v = row[k];
+  if (k === "sender" || k === "target") return (NAMES[v] || v || "").toLowerCase();
+  if (TIER_KEYS.has(k)) return TIER_RANK[v] ?? -1;
+  if (typeof v === "number") return v;
+  if (v === null || v === undefined) return -Infinity;
+  return String(v).toLowerCase();
+}
+function sorted(name){
+  const {k, d} = SORT[name];
+  const q = ($(name === "pairs" ? "qPairs" : "qFeed").value || "").trim().toLowerCase();
+  let rows = DATA[name];
+  if (q) rows = rows.filter(r => [r.sender, r.target, NAMES[r.sender], NAMES[r.target]].some(x => String(x || "").toLowerCase().includes(q)));
+  return rows.slice().sort((a, b) => { const x = sortVal(a, k), y = sortVal(b, k); return x < y ? -d : x > y ? d : 0; });
+}
+function arrows(){
+  document.querySelectorAll("th.sort").forEach(th => {
+    const s = SORT[th.dataset.s]; th.querySelector(".ar")?.remove();
+    if (s.k === th.dataset.k) th.insertAdjacentHTML("beforeend", `<span class="ar">${s.d < 0 ? "▼" : "▲"}</span>`);
+  });
+}
+document.querySelectorAll("th.sort").forEach(th => th.onclick = () => {
+  const s = SORT[th.dataset.s], k = th.dataset.k;
+  if (s.k === k) s.d = -s.d; else { s.k = k; s.d = th.classList.contains("num") || k === "ts" || TIER_KEYS.has(k) || k === "label" ? -1 : 1; }
+  arrows(); th.dataset.s === "pairs" ? drawPairs() : drawFeed();
+});
+$("qPairs").addEventListener("input", () => drawPairs());
+$("qFeed").addEventListener("input", () => drawFeed());
+
+const NEED_KEY = "Step 1: type the researcher key (default: lab-key-change-me) in the box at the top right and click Connect.";
+function needKey(){ if (KEY) return false; say(NEED_KEY, true); $("key").focus(); return true; }
+async function refresh(){
+  if (!KEY) { $("err").textContent = NEED_KEY; return; }
+  try {
+    const st = await api("/api/admin/stats");
+    $("err").textContent = "";
+    $("k-p").textContent = st.participants; $("k-s").textContent = st.sessions; $("k-m").textContent = st.messages.toLocaleString();
+    $("k-pairs").textContent = st.pairs; $("k-model").textContent = st.content_model;
+    if (!Object.keys(ROLES).length) ROLES = await api("/api/admin/roles");
+    (await api("/api/admin/participants")).forEach(p => NAMES[p.code] = p.display_name);
+    if (TAB === "setup") await setup();
+    if (TAB === "pairs") await pairs();
+    if (TAB === "feed") await feed();
+  } catch(e) { $("err").textContent = e.message; }
+}
+
+async function setup(){
+  PARTS = await api("/api/admin/participants");
+  const opt = (sel) => `<option value="">–</option>` + PARTS.map(p => `<option value="${p.code}" ${p.code===sel?"selected":""}>${esc(p.code)} ${esc(p.display_name)}</option>`).join("");
+  if (!DIRTY) $("parts").innerHTML = PARTS.map(p => `<tr><td><b>${p.code}</b>${p.online ? ' <span class="live on">online</span>' : ""}</td><td>${esc(p.display_name)}</td>
+    <td><code>${esc(p.token)}</code></td>
+    <td><select data-role="${p.code}">${Object.keys(ROLES).map(r => `<option ${r===p.role?"selected":""}>${r}</option>`).join("")}</select></td>
+    <td><select data-target="${p.code}">${opt(p.target)}</select></td>
+    <td class="c"><span class="tier ${p.tier}">${p.tier}</span></td>
+    <td class="c"><button class="sm" data-save="${p.code}">Save role</button></td></tr>`).join("");
+  document.querySelectorAll("[data-save]").forEach(b => b.onclick = async () => {
+    const c = b.dataset.save, role = document.querySelector(`[data-role="${c}"]`).value, target = document.querySelector(`[data-target="${c}"]`).value || null;
+    if (TARGET_ROLES.has(role) && !target) { say(`${c}: the role '${role}' needs a target. Choose who it is aimed at, then click Save role again.`, true); return; }
+    try { await post("/api/admin/assignments", {participant: c, role, target}); }
+    catch(e) { say(`${c}: ${e.message}`, true); return; }
+    b.textContent = "Saved"; DIRTY = false; say(`${c}: role saved (${role}${target ? " → " + target : ""}).`); setTimeout(() => b.textContent = "Save role", 1200);
+  });
+  if (document.activeElement !== $("rOwner")) $("rOwner").innerHTML = opt();
+  const rooms = await api("/api/admin/rooms");
+  $("rooms").innerHTML = rooms.map(r => `<tr><td><b>${esc(r.name)}</b> <span class="sub">${r.room_id}</span></td><td>${esc(r.owner)}</td>
+    <td class="c"><span class="live ${r.active_session ? "on" : ""}">${r.active_session ? "LIVE " + r.active_session : "off"}</span></td>
+    <td class="c">${r.active_session ? `<button class="sm" data-end="${r.room_id}">End session</button>` : `<button class="primary sm" data-start="${r.room_id}">Start session</button>`}</td></tr>`).join("");
+  document.querySelectorAll("[data-start]").forEach(b => b.onclick = async () => { await post(`/api/admin/rooms/${b.dataset.start}/start`); refresh(); });
+  document.querySelectorAll("[data-end]").forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    try { const r = await post(`/api/admin/rooms/${b.dataset.end}/end?save_report=${AUTO}`); if (r.report) say(`Session ${r.ended} ended. Report saved: ${r.report}`); }
+    catch(e) { say(e.message, true); }
+    refresh();
+  });
+  const ss = await api("/api/admin/sessions");
+  $("sess").innerHTML = ss.slice().reverse().map(s => `<tr><td>${s.session_id}</td><td>${fmt(s.started_ts)}</td><td>${fmt(s.ended_ts)}</td><td class="num">${s.messages}</td><td class="num">${s.senders}</td>
+    <td class="c"><button class="sm" data-rep="${s.session_id}" data-f="view">View</button> <button class="sm" data-rep="${s.session_id}" data-f="pdf">PDF</button> <button class="sm" data-rep="${s.session_id}" data-f="csv">CSV</button></td></tr>`).join("");
+  document.querySelectorAll("[data-rep]").forEach(b => b.onclick = () => report(b.dataset.rep, b.dataset.f));
+}
+$("autoRep").checked = AUTO;
+$("autoRep").onchange = () => { AUTO = $("autoRep").checked; try { localStorage.setItem("sc_autoreport", AUTO ? "1" : "0"); } catch(e) {} };
+
+async function report(sid, f){
+  if (needKey()) return;
+  const base = `/api/admin/sessions/${encodeURIComponent(sid)}/report`;
+  if (f === "view") {  // on screen: message text shown
+    const w = window.open("", "_blank");
+    if (w) w.document.write("<p style='font:14px system-ui;padding:20px'>Building report…</p>");
+    try {
+      const html = await (await api(`${base}?format=html&mask_text=false`)).text();
+      if (w) { w.document.open(); w.document.write(html); w.document.close(); }
+    } catch(e) { if (w) w.close(); say(e.message, true); }
+    return;
+  }
+  try {  // exported files: message text hidden by default
+    const r = await api(`${base}?format=${f}&mask_text=true`);
+    const blob = await r.blob(), a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = `session_report_${sid}${f === "csv" ? "_csv.zip" : ".pdf"}`; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  } catch(e) { say(e.message, true); }
+}
+
+async function pairs(){
+  const [ps, lc] = await Promise.all([api("/api/admin/pairs"), api("/api/admin/label-check")]);
+  DATA.pairs = ps; drawPairs(); drawConflicts(lc);
+}
+function drawPairs(){
+  const rows = sorted("pairs");
+  $("nPairs").textContent = `${rows.length} of ${DATA.pairs.length} pairs`;
+  $("pairs").innerHTML = rows.map(p => `<tr><td>${who(p.sender)}</td><td>${who(p.target)}</td><td>${esc(p.role || "")}</td>
+    <td class="c">${badge(p.tier_now)}</td>
+    <td class="c" title="Highest risk across this sender's targets: ${(p.sender_overall_risk ?? 0).toFixed(2)}">${badge(p.sender_overall_tier)}${p.sender_targets_high > 1 ? ` <span class="sub">${p.sender_targets_high} targets</span>` : ""}</td>
+    <td class="num">${p.risk_now.toFixed(2)}</td>
+    <td class="num">${p.hostile_messages}</td><td class="num">${p.sessions_targeted}</td><td class="num">${p.messages}</td>
+    <td class="c">${p.label === 1 ? '<span class="lab1">1</span>' : (p.label ?? "–")}${p.label_source ? `<span class="tag">${p.label_source === "manual" ? "manual" : "role"}</span>` : ""}</td>
+    <td class="c"><button class="sm" data-l="1" data-s="${esc(p.sender)}" data-t="${esc(p.target)}">1</button> <button class="sm" data-l="0" data-s="${esc(p.sender)}" data-t="${esc(p.target)}">0</button></td></tr>`).join("");
+  document.querySelectorAll("[data-l]").forEach(b => b.onclick = async () => { await post("/api/admin/labels", {sender: b.dataset.s, target: b.dataset.t, label: +b.dataset.l}); pairs(); });
+}
+function drawConflicts(lc){
+  const sig = JSON.stringify(lc);
+  if (sig === LC_SIG) return;  // unchanged: keep the panel as it is
+  LC_SIG = sig;
+  const box = $("lc");
+  if (!lc.conflicts.length) { box.hidden = true; box.innerHTML = ""; return; }
+  box.hidden = false;
+  const pair = c => c.target ? `${who(c.sender)} → ${who(c.target)}` : who(c.sender);
+  box.innerHTML = `<h2>⚠ Label check: ${lc.conflicts.length} conflict${lc.conflicts.length > 1 ? "s" : ""} need review
+      <span class="count">${lc.reviewed.length} already reviewed</span></h2>
+    <div class="sub" style="color:inherit">Role assignments and manual labels disagree. Nothing is changed until you choose.</div>
+    <ul>${lc.conflicts.map(c => `<li>${pair(c)}: ${esc(c.detail)}<span class="acts">
+      ${c.can_use_role ? `<button class="sm primary" data-res="${esc(c.id)}" data-a="use_role" title="Remove the manual label so the role-derived label applies">Use role label</button>
+      <button class="sm" data-res="${esc(c.id)}" data-a="keep_manual" title="Keep the manual label and record that it was reviewed">Keep manual label</button>`
+      : `<button class="sm" data-res="${esc(c.id)}" data-a="keep_manual" title="Record that this was reviewed">Mark reviewed</button>`}</span></li>`).join("")}</ul>`;
+  box.querySelectorAll("[data-res]").forEach(b => b.onclick = async () => {
+    try { const r = await post("/api/admin/label-check/resolve", {conflict_id: b.dataset.res, action: b.dataset.a}); say(`Conflict resolved: ${r.decision.replace(/_/g, " ")}.`); }
+    catch(e) { say(e.message, true); }
+    LC_SIG = ""; pairs();
+  });
+}
+
+async function feed(){
+  DATA.feed = await api("/api/admin/feed?limit=300"); drawFeed();
+}
+function drawFeed(){
+  const rows = sorted("feed");
+  $("nFeed").textContent = `${rows.length} of ${DATA.feed.length} most recent messages`;
+  $("feed").innerHTML = rows.map(m => `<tr><td>${fmtS(m.ts)}</td><td class="sub">${m.session_id}</td><td>${who(m.sender)}</td><td>${who(m.target)}</td>
+    <td class="sub">${esc(m.target_method)}</td><td class="num">${(m.T ?? 0).toFixed(2)}</td><td class="c">${badge(m.tier)}</td><td class="c">${badge(m.user_tier)}</td><td class="txt">${esc(m.text)}</td></tr>`).join("");
+}
+
+async function download(withText){
+  const r = await api(`/api/admin/export?include_text=${withText}`);
+  const blob = await r.blob(); const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = `safechat_dataset_${withText ? "" : "notext_"}${Date.now()}.zip`; a.click();
+}
+$("exp1").onclick = () => download(true); $("exp2").onclick = () => download(false);
+$("addP").addEventListener("submit", async ev => { ev.preventDefault(); if (needKey()) return; try { await post("/api/admin/participants", {display_name: $("pName").value, is_bot: $("pBot").checked}); $("pName").value = ""; refresh(); } catch(e) { $("err").textContent = e.message; } });
+$("addR").addEventListener("submit", async ev => { ev.preventDefault(); if (needKey()) return; if (!$("rOwner").value) { $("err").textContent = "Add a participant first (e.g. 'StreamHost', tick bot), then pick them as the room owner in the drop-down."; return; }
+  await post("/api/admin/rooms", {name: $("rName").value, owner: $("rOwner").value}); $("rName").value = ""; refresh(); });
+$("f").addEventListener("submit", ev => { ev.preventDefault(); KEY = $("key").value.trim(); try { sessionStorage.setItem("sc_rkey", KEY); } catch(e) {} refresh(); });
+arrows(); refresh(); setInterval(refresh, 3000);
+</script>
+</body>
+</html>

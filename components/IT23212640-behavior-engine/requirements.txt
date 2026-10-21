@@ -1,0 +1,24 @@
+# Core engine + API
+numpy>=1.26
+pandas>=2.1
+pyarrow>=14
+scikit-learn>=1.4
+scipy>=1.11
+joblib>=1.3
+openpyxl>=3.1
+pydantic>=2.5
+fastapi>=0.110
+uvicorn>=0.29
+httpx>=0.27
+websockets>=12        # SafeChat Lab bots
+matplotlib>=3.8
+sqlcipher3-binary>=0.5     # encryption at rest (optional: engine falls back to plain SQLite without a key)
+pytest>=8
+
+# DistilBERT (training on Colab GPU; inference on CPU via ONNX)
+torch>=2.2
+transformers>=4.44
+tokenizers>=0.19
+accelerate>=0.30
+onnx>=1.15
+onnxruntime>=1.17

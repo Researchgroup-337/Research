@@ -1,0 +1,88 @@
+{
+  "world": "synthetic_val (validation only; test worlds untouched)",
+  "content_model_scores": "distilbert_onnx",
+  "positives": 206,
+  "negatives": 8762,
+  "threat_hold_hours": 24.0,
+  "current_threat_override_p": 0.9,
+  "rows": [
+    {
+      "threat_override_p": 0.9,
+      "harasser_pairs_detected": 0.9951,
+      "median_sessions_to_detect": 4.0,
+      "false_alarm_pairs": 618,
+      "false_alarm_rate": 0.07053,
+      "alarms_total": 823,
+      "pairs_with_labelled_threat": 883,
+      "alerted_within_hold": 582,
+      "share_alerted_within_hold": 0.6591,
+      "override_only_false_alarms": 500,
+      "override_only_with_labelled_threat": 386
+    },
+    {
+      "threat_override_p": 0.93,
+      "harasser_pairs_detected": 0.9951,
+      "median_sessions_to_detect": 5.0,
+      "false_alarm_pairs": 559,
+      "false_alarm_rate": 0.0638,
+      "alarms_total": 764,
+      "pairs_with_labelled_threat": 883,
+      "alerted_within_hold": 539,
+      "share_alerted_within_hold": 0.6104,
+      "override_only_false_alarms": 441,
+      "override_only_with_labelled_threat": 358
+    },
+    {
+      "threat_override_p": 0.95,
+      "harasser_pairs_detected": 0.9951,
+      "median_sessions_to_detect": 5.0,
+      "false_alarm_pairs": 525,
+      "false_alarm_rate": 0.05992,
+      "alarms_total": 730,
+      "pairs_with_labelled_threat": 883,
+      "alerted_within_hold": 513,
+      "share_alerted_within_hold": 0.581,
+      "override_only_false_alarms": 407,
+      "override_only_with_labelled_threat": 337
+    },
+    {
+      "threat_override_p": 0.97,
+      "harasser_pairs_detected": 0.9903,
+      "median_sessions_to_detect": 5.0,
+      "false_alarm_pairs": 493,
+      "false_alarm_rate": 0.05627,
+      "alarms_total": 697,
+      "pairs_with_labelled_threat": 883,
+      "alerted_within_hold": 486,
+      "share_alerted_within_hold": 0.5504,
+      "override_only_false_alarms": 375,
+      "override_only_with_labelled_threat": 321
+    },
+    {
+      "threat_override_p": 0.99,
+      "harasser_pairs_detected": 0.9806,
+      "median_sessions_to_detect": 6.0,
+      "false_alarm_pairs": 349,
+      "false_alarm_rate": 0.03983,
+      "alarms_total": 551,
+      "pairs_with_labelled_threat": 883,
+      "alerted_within_hold": 343,
+      "share_alerted_within_hold": 0.3884,
+      "override_only_false_alarms": 231,
+      "override_only_with_labelled_threat": 210
+    },
+    {
+      "threat_override_p": "never",
+      "harasser_pairs_detected": 0.9757,
+      "median_sessions_to_detect": 6.0,
+      "false_alarm_pairs": 118,
+      "false_alarm_rate": 0.01347,
+      "alarms_total": 319,
+      "pairs_with_labelled_threat": 883,
+      "alerted_within_hold": 92,
+      "share_alerted_within_hold": 0.1042,
+      "override_only_false_alarms": 0,
+      "override_only_with_labelled_threat": 0
+    }
+  ]
+}

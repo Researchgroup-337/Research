@@ -1,0 +1,139 @@
+{
+  "content_model": "distilbert_onnx",
+  "dataset": {
+    "messages": 1024,
+    "sessions": 10,
+    "participants": 17,
+    "humans": 0,
+    "bots": 18,
+    "pairs": 63,
+    "positive_pairs": 4,
+    "hostile_message_rate": 0.2559,
+    "target_method": {
+      "broadcast": 580,
+      "reply": 257,
+      "mention": 187
+    },
+    "mean_sessions_per_positive_pair": 9.25
+  },
+  "pair_detection": {
+    "stateless": {
+      "roc_auc": 0.9788,
+      "pr_auc": 0.747,
+      "precision": 0.0851,
+      "recall": 1.0,
+      "f1": 0.1569,
+      "flagged": 47
+    },
+    "frequency": {
+      "roc_auc": 1.0,
+      "pr_auc": 1.0,
+      "precision": 0.1818,
+      "recall": 1.0,
+      "f1": 0.3077,
+      "flagged": 22
+    },
+    "engine": {
+      "roc_auc": 1.0,
+      "pr_auc": 1.0,
+      "precision": 0.5714,
+      "recall": 1.0,
+      "f1": 0.7273,
+      "flagged": 7
+    }
+  },
+  "streaming": {
+    "positives": 4,
+    "negatives": 59,
+    "stateless": {
+      "harasser_pairs_detected": 1.0,
+      "median_sessions_to_detect": 1.0,
+      "false_alarm_pairs": 43,
+      "false_alarm_rate": 0.72881,
+      "alarms_total": 47
+    },
+    "frequency": {
+      "harasser_pairs_detected": 1.0,
+      "median_sessions_to_detect": 1.5,
+      "false_alarm_pairs": 18,
+      "false_alarm_rate": 0.30508,
+      "alarms_total": 22
+    },
+    "engine": {
+      "harasser_pairs_detected": 1.0,
+      "median_sessions_to_detect": 3.0,
+      "false_alarm_pairs": 8,
+      "false_alarm_rate": 0.13559,
+      "alarms_total": 12
+    },
+    "engine_medium_or_above": {
+      "harasser_pairs_detected": 1.0,
+      "median_sessions_to_detect": 3.0,
+      "false_alarm_pairs": 8,
+      "false_alarm_rate": 0.13559,
+      "alarms_total": 12
+    }
+  },
+  "tier_by_label": {
+    "Low": {
+      "0": 56,
+      "1": 0
+    },
+    "Medium": {
+      "0": 0,
+      "1": 0
+    },
+    "High": {
+      "0": 1,
+      "1": 0
+    },
+    "Critical": {
+      "0": 2,
+      "1": 4
+    }
+  },
+  "tier_by_role": {
+    "banter": {
+      "Low": 2,
+      "Medium": 0,
+      "High": 0,
+      "Critical": 2
+    },
+    "burst": {
+      "Low": 2,
+      "Medium": 0,
+      "High": 0,
+      "Critical": 0
+    },
+    "escalator": {
+      "Low": 0,
+      "Medium": 0,
+      "High": 1,
+      "Critical": 1
+    },
+    "harasser": {
+      "Low": 2,
+      "Medium": 0,
+      "High": 0,
+      "Critical": 2
+    },
+    "normal": {
+      "Low": 33,
+      "Medium": 0,
+      "High": 0,
+      "Critical": 0
+    },
+    "subtle_harasser": {
+      "Low": 1,
+      "Medium": 0,
+      "High": 0,
+      "Critical": 1
+    },
+    "troll": {
+      "Low": 16,
+      "Medium": 0,
+      "High": 0,
+      "Critical": 0
+    }
+  }
+}

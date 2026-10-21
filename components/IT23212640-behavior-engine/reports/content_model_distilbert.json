@@ -1,0 +1,80 @@
+{
+  "model": "distilbert_onnx",
+  "jigsaw_test_per_label": {
+    "toxic": {
+      "precision": 0.5497,
+      "recall": 0.9007,
+      "f1": 0.6827,
+      "roc_auc": 0.9726,
+      "pr_auc": 0.8121,
+      "support": 6090
+    },
+    "severe_toxic": {
+      "precision": 0.3122,
+      "recall": 0.6567,
+      "f1": 0.4232,
+      "roc_auc": 0.9894,
+      "pr_auc": 0.373,
+      "support": 367
+    },
+    "obscene": {
+      "precision": 0.6151,
+      "recall": 0.8114,
+      "f1": 0.6998,
+      "roc_auc": 0.9808,
+      "pr_auc": 0.8092,
+      "support": 3691
+    },
+    "threat": {
+      "precision": 0.3707,
+      "recall": 0.8152,
+      "f1": 0.5096,
+      "roc_auc": 0.9904,
+      "pr_auc": 0.5906,
+      "support": 211
+    },
+    "insult": {
+      "precision": 0.69,
+      "recall": 0.7175,
+      "f1": 0.7035,
+      "roc_auc": 0.9797,
+      "pr_auc": 0.784,
+      "support": 3427
+    },
+    "identity_hate": {
+      "precision": 0.6554,
+      "recall": 0.6517,
+      "f1": 0.6535,
+      "roc_auc": 0.9902,
+      "pr_auc": 0.684,
+      "support": 712
+    }
+  },
+  "jigsaw_test_mean_roc_auc": 0.9839,
+  "jigsaw_test_macro_f1": 0.612,
+  "jigsaw_test_abusive_binary": {
+    "f1": 0.7109,
+    "precision": 0.605,
+    "recall": 0.8618,
+    "roc_auc": 0.9718
+  },
+  "davidson_cross_domain": {
+    "f1": 0.8976,
+    "precision": 0.97,
+    "recall": 0.8353,
+    "roc_auc": 0.9157,
+    "n": 12391
+  },
+  "tcm_sanity": {
+    "f1": 0.5613,
+    "precision": 0.9869,
+    "recall": 0.3922,
+    "roc_auc": 0.9695,
+    "n": 1050
+  },
+  "train_seconds": 807.5,
+  "latency_ms_per_message": {
+    "p50": 6.78,
+    "p95": 10.25
+  }
+}
