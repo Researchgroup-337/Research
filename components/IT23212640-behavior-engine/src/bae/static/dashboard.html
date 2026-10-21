@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moderator Risk Console</title>
+<style>
+:root{
+  --page:#f9f9f7; --surface:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --accent:#2a78d6;
+  --t-low:#cde2fb; --t-med:#86b6ef; --t-high:#2a78d6; --t-crit:#0d366b;
+  --t-low-ink:#0d366b; --t-med-ink:#0b0b0b; --t-high-ink:#ffffff; --t-crit-ink:#ffffff;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --page:#0d0d0d; --surface:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --accent:#3987e5;
+    --t-low:#184f95; --t-med:#256abf; --t-high:#5598e7; --t-crit:#cde2fb;
+    --t-low-ink:#f0efec; --t-med-ink:#ffffff; --t-high-ink:#0b0b0b; --t-crit-ink:#0d366b;
+  }
+}
+:root[data-theme="dark"]{
+  --page:#0d0d0d; --surface:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --axis:#383835; --accent:#3987e5;
+  --t-low:#184f95; --t-med:#256abf; --t-high:#5598e7; --t-crit:#cde2fb;
+  --t-low-ink:#f0efec; --t-med-ink:#ffffff; --t-high-ink:#0b0b0b; --t-crit-ink:#0d366b;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--grid)}
+h1{font-size:17px;margin:0;font-weight:600}
+.sub{color:var(--ink2);font-size:12.5px}
+main{padding:16px 20px;max-width:1200px;margin:0 auto}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--surface);border:1px solid var(--grid);border-radius:10px;padding:12px 14px}
+.kpi .v{font-size:26px;font-weight:600;font-variant-numeric:tabular-nums}
+.kpi .l{color:var(--ink2);font-size:12px}
+.grid2{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+@media (max-width:860px){.grid2{grid-template-columns:1fr}}
+section{background:var(--surface);border:1px solid var(--grid);border-radius:10px;padding:12px 14px;overflow:auto}
+h2{font-size:14px;margin:0 0 8px;font-weight:600}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--grid);white-space:nowrap}
+th{color:var(--muted);font-weight:500;font-size:12px}
+td.num{text-align:right}
+.tier{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600}
+.Low{background:var(--t-low);color:var(--t-low-ink)}
+.Medium{background:var(--t-med);color:var(--t-med-ink)}
+.High{background:var(--t-high);color:var(--t-high-ink)}
+.Critical{background:var(--t-crit);color:var(--t-crit-ink)}
+.hash{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--ink2)}
+.bar{height:6px;border-radius:3px;background:var(--grid);min-width:80px}
+.bar>span{display:block;height:6px;border-radius:3px;background:var(--accent)}
+input,button{font:inherit;padding:6px 10px;border-radius:8px;border:1px solid var(--axis);background:var(--surface);color:var(--ink)}
+button{cursor:pointer}
+.alert{padding:8px 0;border-bottom:1px solid var(--grid)}
+.alert .k{font-weight:600}
+.empty{color:var(--muted);padding:12px 0}
+#err{color:#d03b3b;font-size:12.5px}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>Moderator Risk Console</h1><div class="sub">Behavioral Analytics Engine: repeat-harassment detection..</div></div>
+  <form id="f" style="display:flex;gap:8px;align-items:center"><input id="key" type="password" placeholder="API key" autocomplete="off"><button>Connect</button><span id="err"></span></form>
+</header>
+<main>
+  <div class="kpis">
+    <div class="kpi"><div class="v" id="k-pairs">–</div><div class="l">Offender → target pairs tracked</div></div>
+    <div class="kpi"><div class="v" id="k-crit">–</div><div class="l">Critical pairs</div></div>
+    <div class="kpi"><div class="v" id="k-high">–</div><div class="l">High pairs</div></div>
+    <div class="kpi"><div class="v" id="k-alerts">–</div><div class="l">Alerts raised</div></div>
+  </div>
+  <div class="grid2">
+    <section><h2>Highest-risk pairs</h2>
+      <table><thead><tr><th>Tier</th><th title="Risk when the pair was last active">Risk</th><th>Offender</th><th>Target</th><th class="num">Hostile msgs</th><th class="num">Sessions</th><th>Last seen</th><th>Flags</th></tr></thead>
+      <tbody id="pairs"><tr><td colspan="8" class="empty">Enter the API key to load data.</td></tr></tbody></table>
+    </section>
+    <section><h2>Alert feed</h2><div id="alerts" class="empty">No alerts yet.</div></section>
+  </div>
+</main>
+<script>
+let KEY = "";
+try { KEY = sessionStorage.getItem("bae_key") || ""; } catch (e) {}
+const $ = id => document.getElementById(id);
+const short = h => h ? h.slice(0, 10) + "…" : "-";
+const ago = ts => { if (!ts) return "-"; const s = Date.now()/1000 - ts; if (s < 0) return new Date(ts*1000).toLocaleString();
+  if (s < 90) return Math.round(s)+"s ago"; if (s < 5400) return Math.round(s/60)+"m ago"; if (s < 172800) return Math.round(s/3600)+"h ago"; return Math.round(s/86400)+"d ago"; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+async function api(path){ const r = await fetch(path, {headers:{"X-API-Key":KEY}}); if(!r.ok) throw new Error(r.status===401?"Wrong API key":"Error "+r.status); return r.json(); }
+async function refresh(){
+  if(!KEY) return;
+  try{
+    const [st, top, al] = await Promise.all([api("/v1/stats"), api("/v1/top?limit=25"), api("/v1/alerts?limit=30")]);
+    $("err").textContent = "";
+    $("k-pairs").textContent = st.pairs.toLocaleString(); $("k-alerts").textContent = st.alerts.toLocaleString();
+    $("k-crit").textContent = (st.tiers.Critical||0).toLocaleString(); $("k-high").textContent = (st.tiers.High||0).toLocaleString();
+    $("pairs").innerHTML = top.length ? top.map(p => `<tr><td><span class="tier ${p.tier}">${p.tier}</span></td>
+      <td title="${p.risk}"><div class="bar"><span style="width:${Math.round(p.risk*100)}%"></span></div></td>
+      <td class="hash">${short(p.offender)}</td><td class="hash">${short(p.target)}</td>
+      <td class="num">${p.hostile_messages}</td><td class="num">${p.sessions_targeted}</td><td>${ago(p.last_ts)}</td>
+      <td>${p.flags.map(esc).join(", ")}</td></tr>`).join("") : `<tr><td colspan="8" class="empty">No pairs yet.</td></tr>`;
+    $("alerts").innerHTML = al.length ? al.map(a => a.kind === "coordinated_harassment"
+      ? `<div class="alert"><div class="k">Coordinated harassment</div><div class="sub">Target ${short(a.target)}: ${a.detail.distinct_hostile_senders} hostile senders within ${a.detail.window_days} days · ${ago(a.ts)}</div></div>`
+      : `<div class="alert"><div class="k"><span class="tier ${a.old_tier}">${a.old_tier}</span> → <span class="tier ${a.new_tier}">${a.new_tier}</span></div><div class="sub">${short(a.offender)} → ${short(a.target)} · ${a.detail.hostile_messages} hostile msgs over ${a.detail.sessions} sessions · ${ago(a.ts)}</div></div>`).join("") : "No alerts yet.";
+  }catch(e){ $("err").textContent = e.message; }
+}
+$("f").addEventListener("submit", ev => { ev.preventDefault(); KEY = $("key").value.trim(); try{ sessionStorage.setItem("bae_key", KEY);}catch(e){} refresh(); });
+refresh(); setInterval(refresh, 3000);
+</script>
+</body>
+</html>

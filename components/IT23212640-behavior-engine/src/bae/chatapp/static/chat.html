@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SafeChat Lab</title>
+<style>
+:root{--page:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#898781;--line:#e1e0d9;--axis:#c3c2b7;--accent:#2a78d6;--accent-ink:#fff;--mine:#e6f0fc;--warn:#d03b3b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--page:#0d0d0d;--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;--muted:#898781;--line:#2c2c2a;--axis:#383835;--accent:#3987e5;--accent-ink:#fff;--mine:#16263b}}
+:root[data-theme="dark"]{--page:#0d0d0d;--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;--muted:#898781;--line:#2c2c2a;--axis:#383835;--accent:#3987e5;--accent-ink:#fff;--mine:#16263b}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--page);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+.hidden{display:none!important}
+.center{max-width:520px;margin:6vh auto;padding:0 16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
+h1{font-size:20px;margin:0 0 4px}
+h2{font-size:14px;margin:0 0 8px}
+.sub{color:var(--ink2);font-size:13px}
+label{display:block;margin:12px 0 4px;font-weight:500}
+input[type=text],input[type=password],textarea{width:100%;font:inherit;padding:9px 11px;border-radius:8px;border:1px solid var(--axis);background:var(--surface);color:var(--ink)}
+button{font:inherit;padding:8px 14px;border-radius:8px;border:1px solid var(--axis);background:var(--surface);color:var(--ink);cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+button:disabled{opacity:.5;cursor:default}
+.consent{font-size:13px;color:var(--ink2);background:var(--page);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:12px;max-height:180px;overflow:auto}
+.err{color:var(--warn);font-size:13px;min-height:18px;margin-top:8px}
+.app{display:grid;grid-template-columns:1fr 260px;grid-template-rows:auto 1fr auto;height:100vh}
+.top{grid-column:1/3;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--surface)}
+.live{font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;border:1px solid var(--axis);color:var(--ink2)}
+.live.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+#log{overflow:auto;padding:12px 16px}
+.msg{padding:6px 10px;border-radius:10px;margin:4px 0;max-width:760px;position:relative}
+.msg.mine{background:var(--mine)}
+.msg .who{font-weight:600;margin-right:6px}
+.msg .t{color:var(--muted);font-size:11px;margin-left:6px}
+.msg .rep{color:var(--muted);font-size:12px;display:block}
+.msg button.r{position:absolute;right:6px;top:4px;padding:1px 8px;font-size:11px;opacity:0}
+.msg:hover button.r,.msg:focus-within button.r{opacity:1}
+.sys{color:var(--muted);font-size:12px;text-align:center;margin:8px 0}
+.side{grid-row:2/4;grid-column:2;border-left:1px solid var(--line);padding:12px;overflow:auto;background:var(--surface)}
+.member{display:block;width:100%;text-align:left;border:0;padding:5px 6px;border-radius:6px;background:none}
+.member:hover{background:var(--page)}
+.compose{grid-column:1;border-top:1px solid var(--line);padding:10px 16px;background:var(--surface)}
+.compose form{display:flex;gap:8px}
+.replying{font-size:12px;color:var(--ink2);margin-bottom:6px}
+.role{border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:14px;font-size:13px}
+.bank{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.bank button{font-size:12px;padding:4px 10px}
+@media (max-width:760px){.app{grid-template-columns:1fr}.side{display:none}.top{grid-column:1}}
+</style>
+</head>
+<body>
+<!-- Step 1: join -->
+<div id="join" class="center">
+  <div class="card">
+    <h1>SafeChat Lab</h1>
+    <div class="sub">Research chat for project J26-CS-337 (SLIIT).</div>
+    <form id="joinForm">
+      <label for="token">Study token</label>
+      <input id="token" type="password" autocomplete="off" required>
+      <div class="consent" id="consentText">
+        <b>Participant information &amp; consent</b><br>
+        This chat is part of an undergraduate cybersecurity research study on detecting repeated online harassment.
+        Your messages, the time you send them and who they are addressed to are recorded and analysed. You are known only
+        by a study code (e.g. P007); your display name is never exported. Some participants have been asked to
+        <b>role-play</b> rude or hostile behaviour toward other <b>study personas</b>; none of it is personal. You may see offensive
+        language. You can stop at any time, without giving a reason, by closing this page, and ask the researcher to delete your data.
+        Do not share any real personal information (real names, addresses, phone numbers) in the chat.
+      </div>
+      <label style="font-weight:400"><input type="checkbox" id="consent"> I have read the information above and agree to take part.</label>
+      <div style="margin-top:12px"><button class="primary">Continue</button></div>
+      <div class="err" id="joinErr"></div>
+    </form>
+  </div>
+</div>
+
+<!-- Step 2: pick room -->
+<div id="pick" class="center hidden">
+  <div class="card">
+    <h1 id="hello">Hello</h1>
+    <div class="sub">Choose a room. You can only send messages while a session is live.</div>
+    <div id="rooms" style="display:grid;gap:8px;margin-top:14px"></div>
+  </div>
+</div>
+
+<!-- Step 3: chat -->
+<div id="chat" class="app hidden">
+  <div class="top">
+    <div><b id="roomName">Room</b> <span class="sub" id="me"></span></div>
+    <span id="live" class="live">offline</span>
+  </div>
+  <div id="log" aria-live="polite"></div>
+  <div class="compose">
+    <div class="replying hidden" id="replying"></div>
+    <form id="send"><input id="text" type="text" maxlength="500" placeholder="Type a message. Use @name to address someone." autocomplete="off"><button class="primary" id="sendBtn">Send</button></form>
+  </div>
+  <aside class="side">
+    <h2>In this room</h2>
+    <div id="members" class="sub"></div>
+    <div class="role" id="roleCard"></div>
+  </aside>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let TOKEN = "", ME = null, WS = null, REPLY = null, ROOM = null, NAMES = {}, LIVE = false;
+try { TOKEN = sessionStorage.getItem("sc_token") || ""; } catch(e) {}
+
+$("joinForm").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  TOKEN = $("token").value.trim();
+  const r = await fetch("/api/join", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({token: TOKEN, consent: $("consent").checked})});
+  const j = await r.json();
+  if (!r.ok) { $("joinErr").textContent = j.detail || "Could not join"; return; }
+  try { sessionStorage.setItem("sc_token", TOKEN); } catch(e) {}
+  ME = j; showRooms(j);
+});
+
+function showRooms(j){
+  $("join").classList.add("hidden"); $("pick").classList.remove("hidden");
+  $("hello").textContent = `Hello, ${j.name}`;
+  $("rooms").innerHTML = j.rooms.map(r => `<button data-r="${esc(r.room_id)}" data-n="${esc(r.name)}" style="text-align:left">
+     <b>${esc(r.name)}</b> <span class="live ${r.active_session ? "on" : ""}" style="margin-left:6px">${r.active_session ? "LIVE" : "not live"}</span></button>`).join("") || "No rooms yet.";
+  document.querySelectorAll("[data-r]").forEach(b => b.onclick = () => openRoom(b.dataset.r, b.dataset.n));
+  const rc = $("roleCard");
+  rc.innerHTML = `<b>Your role card</b><div class="sub" style="margin-top:4px">${esc(j.role_text)}</div>` +
+    (j.target_name ? `<div style="margin-top:6px">Assigned persona: <b>${esc(j.target_name)}</b></div>` : "") +
+    (j.bank ? `<div class="sub" style="margin-top:8px">Message bank (from a research dataset, so you don't need to write abuse yourself):</div>
+      <div class="bank"><button data-b="clean">Neutral</button><button data-b="mild">Mild</button><button data-b="severe">Severe</button><button data-b="threat">Threat</button></div>` : "");
+  rc.querySelectorAll("[data-b]").forEach(b => b.onclick = () => fromBank(b.dataset.b));
+}
+
+let BANKED = null;
+async function fromBank(bucket){
+  const r = await fetch(`/api/bank?token=${encodeURIComponent(TOKEN)}&bucket=${bucket}`);
+  if (!r.ok) return;
+  const j = await r.json();
+  const pre = ME.target_name ? `@${ME.target_name} ` : "";
+  $("text").value = pre + j.text; BANKED = bucket; $("text").focus();
+}
+
+function openRoom(rid, name){
+  ROOM = rid; $("pick").classList.add("hidden"); $("chat").classList.remove("hidden");
+  $("roomName").textContent = name; $("me").textContent = `· you are ${ME.name} (${ME.code})`;
+  const proto = location.protocol === "https:" ? "wss" : "ws";
+  WS = new WebSocket(`${proto}://${location.host}/ws/${rid}?token=${encodeURIComponent(TOKEN)}`);
+  WS.onmessage = ev => {
+    const m = JSON.parse(ev.data);
+    if (m.type === "hello") { setLive(!!m.session); $("log").innerHTML = ""; m.history.forEach(h => addMsg({...h, name: h.display_name})); }
+    else if (m.type === "msg") addMsg(m);
+    else if (m.type === "members") { NAMES = {}; m.members.forEach(x => NAMES[x.code] = x.name);
+      $("members").innerHTML = m.members.map(x => `<button class="member" data-n="${esc(x.name)}">${esc(x.name)}</button>`).join("");
+      document.querySelectorAll(".member").forEach(b => b.onclick = () => { $("text").value += `@${b.dataset.n} `; $("text").focus(); }); }
+    else if (m.type === "session") { setLive(m.state === "live"); sys(m.state === "live" ? "Session started" : "Session ended"); }
+    else if (m.type === "error") sys(m.detail);
+  };
+  WS.onclose = () => sys("Disconnected. Reload the page to reconnect.");
+}
+
+function setLive(on){ LIVE = on; $("live").textContent = on ? "LIVE" : "not live"; $("live").classList.toggle("on", on); $("sendBtn").disabled = !on; }
+function sys(t){ const d = document.createElement("div"); d.className = "sys"; d.textContent = t; $("log").appendChild(d); $("log").scrollTop = 1e9; }
+function addMsg(m){
+  const d = document.createElement("div");
+  d.className = "msg" + (m.sender === ME.code ? " mine" : "");
+  const t = new Date(m.ts * 1000).toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+  d.innerHTML = (m.reply_to ? `<span class="rep">↪ replying to ${esc(NAMES[m.reply_to] || m.reply_to)}</span>` : "") +
+    `<span class="who">${esc(m.name)}</span>${esc(m.text)}<span class="t">${t}</span>` +
+    (m.sender !== ME.code ? `<button class="r">Reply</button>` : "");
+  const b = d.querySelector("button.r");
+  if (b) b.onclick = () => { REPLY = m.sender; $("replying").textContent = `Replying to ${m.name} · `; $("replying").innerHTML += `<a href="#" id="cancelReply">cancel</a>`;
+    $("replying").classList.remove("hidden"); $("cancelReply").onclick = e => { e.preventDefault(); clearReply(); }; $("text").focus(); };
+  $("log").appendChild(d); $("log").scrollTop = 1e9;
+}
+function clearReply(){ REPLY = null; $("replying").classList.add("hidden"); }
+$("send").addEventListener("submit", ev => {
+  ev.preventDefault();
+  const text = $("text").value.trim();
+  if (!text || !WS || WS.readyState !== 1) return;
+  WS.send(JSON.stringify({type: "msg", text, reply_to: REPLY, from_bank: BANKED}));
+  $("text").value = ""; BANKED = null; clearReply();
+});
+</script>
+</body>
+</html>

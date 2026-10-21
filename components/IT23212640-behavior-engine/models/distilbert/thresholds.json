@@ -1,0 +1,13 @@
+{
+  "thresholds": {
+    "toxic": 0.7339288592338562,
+    "severe_toxic": 0.6785399913787842,
+    "obscene": 0.8017807006835938,
+    "threat": 0.3429014980792999,
+    "insult": 0.7919820547103882,
+    "identity_hate": 0.7242856025695801
+  },
+  "max_len": 128,
+  "base": "distilbert-base-uncased",
+  "smoke": false
+}

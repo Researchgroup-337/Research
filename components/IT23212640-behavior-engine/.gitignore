@@ -1,0 +1,29 @@
+# Behavioral Analytics Engine (IT23212640) - keep the repo small, licence-clean and secret-free.
+
+# Datasets (licence + size) and generated data
+data/raw/
+data/processed/
+data/*.db*
+data/safechat/*.db
+data/safechat/*.db-*
+data/safechat/bots.json
+# Session reports can contain display names and message text
+data/safechat/reports/
+reports/sessions/
+
+# Secrets
+models/.secret_key
+.env
+
+# Large model files (full checkpoint can be re-created with notebooks/01_finetune_distilbert_colab.ipynb)
+models/distilbert/model.onnx
+models/distilbert/model.safetensors
+models/distilbert/checkpoints/
+models/distilbert/training_args.bin
+
+# Python / tooling
+__pycache__/
+.pytest_cache/
+*.pyc
+.venv/
+venv/
